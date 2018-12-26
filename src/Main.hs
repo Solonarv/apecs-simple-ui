@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Control.Concurrent (threadDelay)
@@ -5,33 +6,35 @@ import Control.Monad
 import Data.Int
 import Data.Word
 
-import Apecs hiding (($=))
-import qualified Graphics.Rendering.OpenGL.GL as Gl
-import Graphics.Rendering.OpenGL.GL (($=))
-import qualified Graphics.UI.GLFW as Glfw
+import Apecs
+import qualified SDL
 import Linear.V2
 import Linear.V4
 
 import Scorch
 
+-- TODO Rewrite to use SDL for windowing
+
 main :: IO ()
 main = do
-  Glfw.init
-  Glfw.windowHint $ Glfw.WindowHint'Resizable False
-  Glfw.swapInterval 1
-  Just win <- Glfw.createWindow 640 480 "Scorch Test" Nothing Nothing
-  Glfw.makeContextCurrent (Just win)
-  Gl.clearColor $= Gl.Color4 0 0 0.5 0
-  Gl.shadeModel $= Gl.Smooth
+  SDL.initializeAll
+  window <- SDL.createWindow "Scorch Test" SDL.defaultWindow
+    { SDL.windowOpenGL = Just SDL.defaultOpenGL
+        { SDL.glColorPrecision = V4 8 8 8 8
+        , SDL.glProfile        = SDL.Core SDL.Normal 3 2
+        }
+    , SDL.windowInitialSize = V2 640 480
+    }
+  ctx <- SDL.glCreateContext window
+  SDL.glMakeCurrent window ctx
   world <- initTestWorld
   runWith world setupTestScene
   let
     loop = do
-      Glfw.pollEvents
-      shouldClose <- Glfw.windowShouldClose win
-      unless shouldClose do
+      events <- fmap SDL.eventPayload <$> SDL.pollEvents
+      whenEmpty [ () | SDL.WindowClosedEvent _ <- events ] do
         runWith world Scorch.render
-        Glfw.swapBuffers win
+        SDL.glSwapWindow window
         threadDelay 20_000
         loop
   loop
@@ -59,3 +62,6 @@ instance Monad m => Has TestWorld m Colored where
 
 initTestWorld :: IO TestWorld
 initTestWorld = TestWorld <$> explInit <*> explInit <*> explInit
+
+whenEmpty :: (Foldable t, Applicative f) => t a -> f () -> f ()
+whenEmpty = when . null

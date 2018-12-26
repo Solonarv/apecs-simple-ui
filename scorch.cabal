@@ -15,7 +15,8 @@ extra-source-files:  CHANGELOG.md, README.md
 
 common exts
   default-extensions:  TypeFamilies, BlockArguments, FlexibleContexts, RankNTypes, TypeApplications
-                     , FlexibleInstances, MultiParamTypeClasses, NumericUnderscores
+                     , FlexibleInstances, MultiParamTypeClasses, NumericUnderscores, ViewPatterns
+                     , LambdaCase, PatternGuards
 
 library
   import: exts
@@ -23,27 +24,30 @@ library
                      , Scorch
                      , Scorch.Components
                      , Scorch.Render
+                     , Shader
+                     , Shader.Quote
   -- other-modules:
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13
                      , apecs ^>= 0.7.1
                      , linear ^>= 1.20
-                     , OpenGL >= 3.0 && < 3.4
+                     , OpenGLRaw >= 3.0 && < 3.4
                      , unliftio ^>= 0.2.9
+                     , template-haskell ^>= 2.14.0.0
+                     , bytestring ^>= 0.10.8.2
   hs-source-dirs:      lib
   default-language:    Haskell2010
 
 executable scorch-test
   import: exts
   main-is:             Main.hs
-  -- other-modules:
+  other-modules:       TriangleShader
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13
-                     , apecs ^>= 0.7.1
-                     , linear ^>= 1.20
-                     , OpenGL >= 3.0 && < 3.4
-                     , unliftio ^>= 0.2.9
+                     , apecs
+                     , linear
+                     , OpenGLRaw
+                     , sdl2 ^>= 2.4.1.0
                      , scorch
-                     , GLFW-b ^>= 3.2.1.0
   hs-source-dirs:      src
   default-language:    Haskell2010

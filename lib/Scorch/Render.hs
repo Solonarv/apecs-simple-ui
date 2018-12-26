@@ -5,8 +5,7 @@ import Data.Foldable
 import Data.Int
 
 import Apecs hiding (($=))
-import qualified Graphics.Rendering.OpenGL.GL as Gl
-import           Graphics.Rendering.OpenGL.GL (($=))
+import Graphics.GL
 import Linear.V2
 import Linear.V4
 import UnliftIO
@@ -14,23 +13,35 @@ import UnliftIO
 import Apecs.Folds
 import Scorch.Components
 
+-- TODO use shaders
+
 render :: (MonadIO m, Has w m Extent, Has w m Colored) => SystemT w m ()
 render = do
   prims <- cfoldMap \(Extent pos dims, Colored (V4 r g b a)) -> do
-    Gl.color (Gl.Color4 r g b a)
-    quad pos dims
+    glColor4f r g b a
+    rectTris pos dims
   liftIO do
-    Gl.clear [Gl.ColorBuffer]
+    glClearColor 0.8 0.8 1 0
+    glClear GL_COLOR_BUFFER_BIT
+    glBegin GL_TRIANGLES
     prims
+    glEnd
 
-quad :: V2 Int32 -> V2 Int32 -> IO ()
-quad (V2 x y) (V2 dx dy) = Gl.renderPrimitive Gl.Polygon do
-  let
-    ul = Gl.Vertex2 x      y
-    ur = Gl.Vertex2 (x+dx) y
-    bl = Gl.Vertex2 x      (y+dy)
-    br = Gl.Vertex2 (x+dx) (y+dy)
-  Gl.vertex ul
-  Gl.vertex ur
-  Gl.vertex br
-  Gl.vertex bl
+-- | Build a rectangle by specifying two triangles.
+-- Meant to be used between 'glBegin' and 'glEnd'.
+rectTris :: V2 Int32 -> V2 Int32 -> IO ()
+rectTris (fmap fromIntegral -> V2 x y) (fmap fromIntegral -> V2 dx dy) = do
+    vertex2 ul
+    vertex2 bl
+    vertex2 ur
+    vertex2 ur
+    vertex2 bl
+    vertex2 br
+  where
+    bl = V2 x      y
+    br = V2 (x+dx) y
+    ul = V2 x      (y+dy)
+    ur = V2 (x+dx) (y+dy)
+
+vertex2 :: V2 Float -> IO ()
+vertex2 (V2 x y) = glVertex2f x y
