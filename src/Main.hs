@@ -5,13 +5,18 @@ import Control.Concurrent (threadDelay)
 import Control.Monad
 import Data.Int
 import Data.Word
+import Foreign
+import Foreign.C
 
 import Apecs
+import Graphics.GL
 import qualified SDL
 import Linear.V2
 import Linear.V4
 
 import Scorch
+import Shader
+import TriangleShader
 
 -- TODO Rewrite to use SDL for windowing
 
@@ -27,6 +32,7 @@ main = do
     }
   ctx <- SDL.glCreateContext window
   SDL.glMakeCurrent window ctx
+  prog <- initResources
   world <- initTestWorld
   runWith world setupTestScene
   let
@@ -65,3 +71,27 @@ initTestWorld = TestWorld <$> explInit <*> explInit <*> explInit
 
 whenEmpty :: (Foldable t, Applicative f) => t a -> f () -> f ()
 whenEmpty = when . null
+
+initResources :: IO Program
+initResources = do
+  -- VAO
+  vao <- overPtr $ glGenVertexArrays 1
+  glBindVertexArray vao
+  -- VBO
+  vbo <- overPtr $ glGenBuffers 1
+  glBindBuffer GL_ARRAY_BUFFER vbo
+  
+  -- shader program
+  Program program <- attachShaders =<< sequenceA [shVertex2D, shFragment2D]
+  glUseProgram program
+
+  -- Link Vertex data with Attributes
+  posAttrib <- withCString "position" $ glGetAttribLocation program
+  glVertexAttribPointer (fromIntegral posAttrib) 2 GL_FLOAT GL_FALSE 0 nullPtr
+  glEnableVertexAttribArray (fromIntegral posAttrib)
+
+  -- Uniforms
+  uniColor <- withCString "triangleColor" $ glGetUniformLocation program
+  glUniform3f uniColor 0 0 1
+
+  pure (Program program)

@@ -16,7 +16,7 @@ extra-source-files:  CHANGELOG.md, README.md
 common exts
   default-extensions:  TypeFamilies, BlockArguments, FlexibleContexts, RankNTypes, TypeApplications
                      , FlexibleInstances, MultiParamTypeClasses, NumericUnderscores, ViewPatterns
-                     , LambdaCase, PatternGuards
+                     , LambdaCase, PatternGuards, DataKinds
 
 library
   import: exts
