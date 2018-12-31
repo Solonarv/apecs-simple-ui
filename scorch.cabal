@@ -31,7 +31,7 @@ library
   build-depends:       base >=4.12 && <4.13
                      , apecs ^>= 0.7.1
                      , linear ^>= 1.20
-                     , OpenGLRaw >= 3.0 && < 3.4
+                     , sdl2 ^>= 2.4.1.0
                      , unliftio ^>= 0.2.9
                      , template-haskell ^>= 2.14.0.0
                      , bytestring ^>= 0.10.8.2
@@ -46,8 +46,6 @@ executable scorch-test
   build-depends:       base >=4.12 && <4.13
                      , apecs
                      , linear
-                     , OpenGLRaw
-                     , sdl2 ^>= 2.4.1.0
                      , scorch
   hs-source-dirs:      src
   default-language:    Haskell2010
