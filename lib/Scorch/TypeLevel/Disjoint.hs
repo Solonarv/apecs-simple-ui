@@ -19,8 +19,8 @@ type family DisjointSetsHelper e as bs :: Constraint where
 
 type DisjointSetsError e as bs
   = Text "The following sets of types should be disjoint:"
-  :$$: ShowTypeList as
-  :$$: ShowTypeList bs
+  :$$: Text "{" :<>: ShowTypeList as :<>: Text "}"
+  :$$: Text "{" :<>: ShowTypeList bs :<>: Text "}"
   :$$: Text "But they both contain " :<>: ShowType e
 
 type family ShowTypeList xs :: ErrorMessage where
