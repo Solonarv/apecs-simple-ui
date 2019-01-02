@@ -9,14 +9,11 @@ import Foreign
 import Foreign.C
 
 import Apecs
-import Graphics.GL
-import qualified SDL
+import SDL
 import Linear.V2
 import Linear.V4
 
 import Scorch
-import Shader
-import TriangleShader
 
 -- TODO Rewrite to use SDL for windowing
 
@@ -26,7 +23,7 @@ main = do
   window <- SDL.createWindow "Scorch Test" SDL.defaultWindow
     { SDL.windowInitialSize = V2 640 480
     }
-  rdr <- SDL.createRenderer defaultRenderer
+  rdr <- SDL.createRenderer window 0 defaultRenderer
     { SDL.rendererType = SDL.AcceleratedVSyncRenderer
     , SDL.rendererTargetTexture = True
     }

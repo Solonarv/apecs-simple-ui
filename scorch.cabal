@@ -16,16 +16,20 @@ extra-source-files:  CHANGELOG.md, README.md
 common exts
   default-extensions:  TypeFamilies, BlockArguments, FlexibleContexts, RankNTypes, TypeApplications
                      , FlexibleInstances, MultiParamTypeClasses, NumericUnderscores, ViewPatterns
-                     , LambdaCase, PatternGuards, DataKinds
+                     , LambdaCase, PatternGuards, DataKinds, PolyKinds, TypeOperators, ConstraintKinds
+                     , PatternSynonyms, ScopedTypeVariables, DeriveGeneric
+  other-extensions:    UndecidableInstances
 
 library
   import: exts
   exposed-modules:     Apecs.Folds
                      , Scorch
                      , Scorch.Components
+                     , Scorch.Event.Class
+                     , Scorch.Interact
+                     , Scorch.Optics.Iso
+                     , Scorch.TypeLevel.Disjoint
                      , Scorch.Render
-                     , Shader
-                     , Shader.Quote
   -- other-modules:
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13
@@ -35,17 +39,20 @@ library
                      , unliftio ^>= 0.2.9
                      , template-haskell ^>= 2.14.0.0
                      , bytestring ^>= 0.10.8.2
+                     , generic-lens ^>= 1.1.0.0
+                     , lens ^>= 4.17
   hs-source-dirs:      lib
   default-language:    Haskell2010
 
 executable scorch-test
   import: exts
   main-is:             Main.hs
-  other-modules:       TriangleShader
+  -- other-modules:       
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13
                      , apecs
                      , linear
+                     , sdl2
                      , scorch
   hs-source-dirs:      src
   default-language:    Haskell2010
