@@ -15,8 +15,6 @@ import Linear.V4
 
 import Scorch
 
--- TODO Rewrite to use SDL for windowing
-
 main :: IO ()
 main = do
   SDL.initializeAll
@@ -45,9 +43,10 @@ setupTestScene = do
   pure ()
 
 data TestWorld = TestWorld
-  { twEntityCounter :: Storage EntityCounter
-  , twExtent        :: Storage Extent
-  , twColored       :: Storage Colored
+  { twEntityCounter   :: Storage EntityCounter
+  , twExtent          :: Storage Extent
+  , twColored         :: Storage Colored
+  , twRenderCallbacks :: Storage (RenderCallbacks TestWorld IO)
   }
 
 instance Monad m => Has TestWorld m EntityCounter where
@@ -59,8 +58,11 @@ instance Monad m => Has TestWorld m Extent where
 instance Monad m => Has TestWorld m Colored where
   getStore = asks twColored
 
+instance Monad m => Has TestWorld m (RenderCallbacks TestWorld IO) where
+  getStore = asks twRenderCallbacks
+
 initTestWorld :: IO TestWorld
-initTestWorld = TestWorld <$> explInit <*> explInit <*> explInit
+initTestWorld = TestWorld <$> explInit <*> explInit <*> explInit <*> explInit
 
 whenEmpty :: (Foldable t, Applicative f) => t a -> f () -> f ()
 whenEmpty = when . null

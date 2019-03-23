@@ -10,8 +10,8 @@ import Linear.V4
 import SDL hiding (get)
 import UnliftIO
 
-import Apecs.Folds
 import Scorch.Components
+import Scorch.Util.Apecs.Folds
 
 -- TODO use shaders
 
